@@ -7,6 +7,16 @@ import (
 	"path/filepath"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+)
+
+var (
+	focusedStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	blurredStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
+	cursorStyle         = focusedStyle.Copy()
+	noStyle             = lipgloss.NewStyle()
+	helpStyle           = blurredStyle.Copy()
+	cursorModeHelpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("244"))
 )
 
 type model struct {
@@ -80,22 +90,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	content := fmt.Sprintf("In: %s (%d files)\n\n", m.currentPath, len(m.files))
+	content := ""
+	content += blurredStyle.Render("At: ")
+	content += noStyle.Render(m.currentPath)
+	content += blurredStyle.Render(fmt.Sprintf(" (%d files)\n", len(m.files)))
 
 	for i, file := range m.files {
-		cursor := " "
-		if m.cursor == i {
-			cursor = ">"
+
+		icon := "󰈚"
+		if file.IsDir() {
+			icon = "󰉋"
 		}
 
-		if file.IsDir() {
-			content += fmt.Sprintf("%s 󰉋 %s\n", cursor, file.Name())
-		} else {
-			content += fmt.Sprintf("%s 󰈚 %s\n", cursor, file.Name())
+		style := noStyle
+		if m.cursor == i {
+			style = focusedStyle
 		}
+
+		content += style.Render("\n>", icon, file.Name())
 	}
 
-	content += "\n(q to exit, backspace to exit current directory)"
+	content += helpStyle.Render("\n\n(q to exit, backspace to exit current directory)")
 
 	return content
 }
