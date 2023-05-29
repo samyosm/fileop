@@ -67,7 +67,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = 0
 
 			} else {
-				return m, tea.ExecProcess(exec.Command("nvim", path), nil)
+				editor := os.Getenv("EDITOR")
+				if len(editor) == 0 {
+					// TODO: do something when the editor variable isn't set
+				}
+				return m, tea.ExecProcess(exec.Command(editor, path), nil)
 			}
 		}
 	}

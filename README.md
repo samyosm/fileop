@@ -4,5 +4,10 @@ fileop - opens a TUI in which you can search and open files.
 
 ## Usage
 
-- fileop ...
-- fileop [_path_] ...
+- fileop
+
+## Features
+
+- Opening files based on `$EDITOR`
+- Going inside directories
+- Going outside directories
